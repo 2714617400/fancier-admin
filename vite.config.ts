@@ -20,7 +20,8 @@ export default defineConfig({
         proxy: {
             // 选项写法
             '/api': {
-                target: 'http://123.60.18.204:3000',
+                // target: 'http://123.60.18.204:3000',
+                target: 'http://127.0.0.1:3000',
                 changeOrigin: true,
                 rewrite: (path) => path.replace(/^\/api/, ''),
             },

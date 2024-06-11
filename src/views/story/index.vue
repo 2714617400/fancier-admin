@@ -1,19 +1,5 @@
 <template>
     <div class="tables_page">
-        <!-- <v-row no-gutters>
-            <v-col cols="12" sm="4"><Statistic /></v-col>
-            <v-col cols="12" sm="4" class="my-sm-0 my-4"
-                ><Statistic
-                    :up="false"
-                    value="360"
-                    chart-color="#4caf50"
-                    class="mx-0 mx-sm-4"
-                    :chart-data="[30, 47, 75, 47, 65]"
-            /></v-col>
-            <v-col cols="12" sm="4"
-                ><Statistic value="15,260" chart-color="#FF5722" :chart-data="[68, 58, 65, 72]"
-            /></v-col>
-        </v-row> -->
         <v-card class="my-4">
             <div class="search-bar ma-4 d-flex">
                 <div class="filter d-flex">
@@ -89,7 +75,7 @@
                     <tr>
                         <th class="text-left">书名</th>
                         <th class="text-left">封面</th>
-                        <th class="text-left">进度</th>
+                        <th class="text-left">章数</th>
                         <th class="text-left">更新时间</th>
                         <th class="text-left">创建时间</th>
                         <th class="text-left"></th>
@@ -113,13 +99,8 @@
                             ></v-img>
                         </td>
                         <td>
-                            <div style="width: 200px">
-                                <v-progress-linear
-                                    v-model="item.progress"
-                                    :color="item.color"
-                                    rounded
-                                    height="6"
-                                ></v-progress-linear>
+                            <div>
+                                {{ item.chaptersCount }}
                             </div>
                         </td>
                         <td>
@@ -134,6 +115,12 @@
                         </td>
                         <td>
                             <div>
+                                <v-icon
+                                    icon="mdi-format-list-bulleted"
+                                    color="#999"
+                                    style="margin-inline-end: 10px"
+                                    @click="handleViewChapt(item)"
+                                />
                                 <v-icon
                                     icon="mdi-lead-pencil"
                                     color="#999"
@@ -150,12 +137,13 @@
                     </tr>
                 </tbody>
             </v-table>
-            <div class="d-flex py-2" style="justify-content: center">
+            <div class="py-2" style="justify-content: center">
                 <v-pagination
-                    :model-value="1"
-                    :length="4"
+                    v-model="pageParams.page"
+                    :length="pLength"
                     size="small"
                     rounded="circle"
+                    @update:modelValue="handleUpdate"
                 ></v-pagination>
             </div>
         </v-card>
@@ -172,53 +160,38 @@
         </v-dialog>
     </div>
     <Create ref="crt" @success="handleSuccess" />
+    <ViewChaptersModel ref="viewChapt" @success="handleSuccess" />
     <Snackbar ref="snackbar" />
 </template>
 <script setup lang="ts">
-import Statistic from '@/components/Statistic/index.vue';
 import axios from 'axios';
 import Create from './components/createModel.vue';
-import { ref, unref, onMounted } from 'vue';
+import ViewChaptersModel from './components/viewChaptersModel.vue';
+import { ref, reactive, computed, unref, onMounted } from 'vue';
 
 const snackbar = ref();
 const dialog = ref(false);
 const Cover = new URL('../../assets/cover.jpg', import.meta.url).href;
-const list = ref([
-    {
-        title: 'GitHub',
-        cover_image: Cover,
-        color: 'secondary',
-        progress: 0,
-        id: '',
-        createdAt: '',
-        updatedAt: '',
-    },
-    {
-        title: 'Angular',
-        cover_image: Cover,
-        color: 'red',
-        progress: 0,
-        id: '',
-        createdAt: '',
-        updatedAt: '',
-    },
-    {
-        title: 'Apple',
-        cover_image: Cover,
-        color: 'green',
-        progress: 0,
-        id: '',
-        createdAt: '',
-        updatedAt: '',
-    },
-]);
+const list = ref([]);
 const crt = ref();
-
+const viewChapt = ref();
+const pageParams = reactive({
+    page: 1,
+    pageSize: 5,
+    total: 0,
+});
+const pLength = computed(() => Math.ceil(pageParams.total / pageParams.pageSize)); // 分页数
 // 列表操作
 async function getStory() {
-    let result = await axios.get('/api/story');
+    let result = await axios.get('/api/story', {
+        params: pageParams,
+    });
     let { data } = result;
-    list.value = data;
+    list.value = data.result.list;
+    pageParams.total = data.result.total;
+}
+function handleUpdate() {
+    getStory();
 }
 function handleCreate() {
     unref(crt).open();
@@ -236,24 +209,16 @@ async function handleDel({ id }) {
         unref(snackbar).error('异常');
     }
 }
+function handleViewChapt(item) {
+    unref(viewChapt).open(item.id);
+}
 function handleSuccess() {
     getStory();
 }
 
 onMounted(() => {
     getStory();
-    setTimeout(() => {
-        list.value.forEach((item) => {
-            item.progress = Math.floor(Math.random() * 100) + 1;
-        });
-    }, 600);
 });
-
-const onTest = () => {
-    // router.push({
-    //     path: '/graphics/oasis-engine',
-    // });
-};
 
 function previewFileAddress(url: string) {
     if (!url || url.split(':')[0] === 'http' || url.split(':')[0] === 'https') {
