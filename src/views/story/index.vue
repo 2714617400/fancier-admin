@@ -5,6 +5,7 @@
                 <div class="filter d-flex">
                     <div class="row">
                         <v-text-field
+                            v-model="pageParams.title"
                             clearable
                             hide-details
                             label="书名"
@@ -49,6 +50,16 @@
                             ></v-select>
                         </div>
                     </div> -->
+                    <div class="row">
+                        <div class="pr-0 pr-sm-4">
+                            <v-btn
+                                class="btn mr-4 my-4 my-sm-0 mx-2"
+                                color="primary"
+                                @click="handleSearch"
+                                >查询</v-btn
+                            >
+                        </div>
+                    </div>
                 </div>
                 <!-- <v-btn
                     class="btn mr-4 my-4 my-sm-0"
@@ -178,6 +189,7 @@ const viewChapt = ref();
 const pageParams = reactive({
     page: 1,
     pageSize: 5,
+    title: '',
     total: 0,
 });
 const pLength = computed(() => Math.ceil(pageParams.total / pageParams.pageSize)); // 分页数
@@ -189,6 +201,10 @@ async function getStory() {
     let { data } = result;
     list.value = data.result.list;
     pageParams.total = data.result.total;
+}
+function handleSearch() {
+    pageParams.page = 1;
+    getStory();
 }
 function handleUpdate() {
     getStory();

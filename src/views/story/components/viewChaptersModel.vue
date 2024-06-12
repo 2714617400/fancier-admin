@@ -43,7 +43,7 @@ const id = ref('');
 const list = ref([]);
 const pageParams = reactive({
     page: 1,
-    pageSize: 10,
+    pageSize: 20,
     total: 0,
 });
 const pLength = computed(() => Math.ceil(pageParams.total / pageParams.pageSize)); // 分页数
@@ -64,6 +64,10 @@ async function getChapter() {
 }
 
 async function handleLoad({ done }) {
+    if (list.value.length >= pageParams.total) {
+        done('empty');
+        return;
+    }
     pageParams.page++;
     const res = await getChapter();
     done('ok');
