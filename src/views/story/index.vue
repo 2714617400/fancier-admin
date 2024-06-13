@@ -103,6 +103,7 @@
                         </td>
                         <td>
                             <v-img
+                                class="my-2"
                                 :width="100"
                                 aspect-ratio="16/9"
                                 cover
