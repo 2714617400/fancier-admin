@@ -24,7 +24,7 @@
                             variant="outlined"
                         ></v-text-field>
                         <div style="margin-inline-start: 40px; padding-block-end: 16px">
-                            <Upload v-model:value="formData.cover_image" @success="handleSuccess" />
+                            <Upload v-model:value="formData.cover" @success="handleSuccess" />
                         </div>
                         <v-text-field
                             v-model="formData.author"
@@ -96,7 +96,7 @@ const id = ref('');
 const formData = ref({
     title: '',
     author: '',
-    cover_image: '',
+    cover: '',
     genres: [],
     description: '',
 });
@@ -112,7 +112,7 @@ function open(data?: any) {
 
 function handleSuccess(data) {
     console.log('上传', data);
-    formData.value.cover_image = data.url;
+    formData.value.cover = data.url;
 }
 
 function onSubmit(cb, isActive) {
@@ -142,7 +142,7 @@ function handleAfterLeave(e) {
     formData.value = {
         title: '',
         author: '',
-        cover_image: '',
+        cover: '',
         genres: [],
         description: '',
     };

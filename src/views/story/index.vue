@@ -107,7 +107,7 @@
                                 :width="100"
                                 aspect-ratio="16/9"
                                 cover
-                                :src="previewFileAddress(item.cover_image)"
+                                :src="previewFileAddress(item.cover)"
                             ></v-img>
                         </td>
                         <td>
