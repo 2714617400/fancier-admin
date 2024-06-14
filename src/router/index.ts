@@ -76,7 +76,7 @@ const router = createRouter({
             name: 'Story',
             meta: {
                 visible: true,
-                title: '小说',
+                title: '书库',
                 icon: 'mdi-firebase',
             },
             component: Layout,
